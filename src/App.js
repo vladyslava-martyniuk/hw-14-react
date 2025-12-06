@@ -43,7 +43,7 @@ export default class App extends Component {
 
       this.setState((prev) => ({
         images: [...prev.images, ...data.hits],
-        totalHits: data.totalHits, // ДОДАНО
+        totalHits: data.totalHits, 
       }));
     } catch (err) {
       console.log("Fetch error:", err);
