@@ -15,11 +15,12 @@ const Container = styled.div`
 
 export default class App extends Component {
   state = {
-    query: "cat", // стартові картинки
+    query: "cat", 
     page: 1,
     images: [],
     loading: false,
     modalImage: null,
+    totalHits: 0, 
   };
 
   componentDidMount() {
@@ -42,6 +43,7 @@ export default class App extends Component {
 
       this.setState((prev) => ({
         images: [...prev.images, ...data.hits],
+        totalHits: data.totalHits, // ДОДАНО
       }));
     } catch (err) {
       console.log("Fetch error:", err);
@@ -51,7 +53,10 @@ export default class App extends Component {
   };
 
   handleSearch = (query) => {
-    this.setState({ query, page: 1, images: [] }, this.fetchImages);
+    this.setState(
+      { query, page: 1, images: [], totalHits: 0 },
+      this.fetchImages
+    );
   };
 
   loadMore = () => {
@@ -67,7 +72,12 @@ export default class App extends Component {
   };
 
   render() {
-    const { images, loading, modalImage } = this.state;
+    const { images, loading, modalImage, totalHits } = this.state;
+
+    const shouldShowButton =
+      images.length > 0 &&
+      !loading &&
+      images.length < totalHits; 
 
     return (
       <Container>
@@ -75,7 +85,7 @@ export default class App extends Component {
         <Searchbar onSubmit={this.handleSearch} />
         <ImageGallery images={images} onItemClick={this.openModal} />
         {loading && <Loader />}
-        {images.length > 0 && !loading && <Button onClick={this.loadMore} />}
+        {shouldShowButton && <Button onClick={this.loadMore} />}
         {modalImage && <Modal src={modalImage} onClose={this.closeModal} />}
       </Container>
     );
